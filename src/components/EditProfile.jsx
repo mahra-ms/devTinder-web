@@ -52,7 +52,7 @@ function EditProfile({ user, onSave }) {
   const labelClasses = "block text-xs font-medium text-[#8A8FA3] mb-1.5";
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-[#0B0D12] px-4 py-8 sm:py-2">
+    <div className="min-h-[calc(100vh-64px)] bg-[#0B0D12] px-4 py-8 sm:py-4">
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 lg:items-stretch gap-6 lg:gap-1">
         <div className="w-full h-full flex flex-col">
           <p className="text-xs font-mono text-[#565B6B] mb-2 text-center lg:text-left">edit</p>
@@ -62,7 +62,7 @@ function EditProfile({ user, onSave }) {
           >
             <div>
               <h2 className="text-xl sm:text-2xl font-semibold text-[#E7E9EE]">Edit profile</h2>
-              <p className="text-sm text-[#8A8FA3] mt-1">Keep it current — it's the first thing people see.</p>
+              
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

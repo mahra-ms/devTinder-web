@@ -32,8 +32,9 @@ function NavBar() {
     <header className="sticky top-0 z-50 bg-[#0B0D12]/90 backdrop-blur-md border-b border-[#2A2E3A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
+
         <Link
-          to="/feed"
+          to={user ? "/feed" : "/login"}
           className="font-[var(--font-mono,'JetBrains_Mono',monospace)] text-lg sm:text-xl font-medium text-[#E7E9EE] flex items-center gap-0.5"
         >
           <span className="text-[#7C6CFF]">{"<"}</span>
@@ -57,7 +58,10 @@ function NavBar() {
               <div className="w-px h-6 bg-[#2A2E3A]" />
               <div className="flex items-center gap-3">
                 <span className="text-sm text-[#8A8FA3]">
-                  hi, <span className="text-[#E7E9EE] font-medium">{user.firstName}</span>
+                  hi,{" "}
+                  <span className="text-[#E7E9EE] font-medium">
+                    {user.firstName}
+                  </span>
                 </span>
                 <img
                   src={user.photoUrl}
@@ -80,11 +84,25 @@ function NavBar() {
               aria-label="Toggle menu"
             >
               {menuOpen ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M3 6h18M3 12h18M3 18h18" />
                 </svg>
               )}
