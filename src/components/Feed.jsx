@@ -11,19 +11,10 @@ const Feed = () => {
 
   const getFeed = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/feed`, {
-        withCredentials: true, 
-      });
-
-      console.log(res.data);
-
+      const res = await axios.get(`${BASE_URL}/feed`, { withCredentials: true });
       dispatch(addFeed(res.data.users));
     } catch (err) {
-      console.error(
-        "Feed error:",
-        err.response?.status,
-        err.response?.data
-      );
+      console.error("Feed error:", err.response?.status, err.response?.data);
     }
   };
 
@@ -32,11 +23,17 @@ const Feed = () => {
   }, []);
 
   if (!feed || feed.length === 0) {
-    return <h1 className="text-center mt-10">No feed available</h1>;
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center gap-2 px-4 text-center">
+        <span className="font-mono text-3xl text-[#2A2E3A]">{"{ }"}</span>
+        <h1 className="text-lg font-medium text-[#E7E9EE]">No one new to show right now</h1>
+        <p className="text-sm text-[#8A8FA3]">Check back later for more devs to connect with.</p>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8 sm:py-12">
       <UserCard user={feed[0]} />
     </div>
   );

@@ -1,15 +1,41 @@
+import axios from "axios";
 import React from "react";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { removeFeed } from "../utils/feedSlice";
 
 function UserCard({ user }) {
-  console.log(user, "data from card");
+  const dispatch = useDispatch();
 
-  if (!user) return <div>No user</div>;
+  const handleSendRequest = async (status, userId) => {
+    try {
+      await axios.post(
+        `${BASE_URL}/request/send/${status}/${userId}`,
+        {},
+        { withCredentials: true },
+      );
+      dispatch(removeFeed(userId));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (!user) return <div className="text-center text-[#8A8FA3]">No user</div>;
 
   return (
-    <div className="flex justify-center items-center p-4">
-      <div className="card bg-base-300 w-104 shadow-xl rounded-2xl overflow-hidden">
-        {/* Image */}
-        <figure className="h-80 w-full overflow-hidden">
+    <div className="w-full max-w-[22rem] sm:max-w-sm mx-auto">
+      <div className="rounded-2xl bg-[#14161D] border border-[#2A2E3A] shadow-2xl shadow-black/40 overflow-hidden">
+        {/* Terminal chrome */}
+        <div className="px-4 py-2.5 flex items-center gap-1.5 border-b border-[#2A2E3A]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5C7A]/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F5C242]/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00D6A3]/70" />
+          <span className="ml-2 text-xs font-mono text-[#565B6B] truncate">
+            profile/{(user.firstName || "user").toLowerCase()}.json
+          </span>
+        </div>
+
+        <figure className="h-64 sm:h-72 w-full overflow-hidden bg-[#1C1F29]">
           <img
             src={user.photoUrl}
             alt={`${user.firstName} ${user.lastName}`}
@@ -17,47 +43,44 @@ function UserCard({ user }) {
           />
         </figure>
 
-        {/* Card Body */}
-        <div className="card-body">
-          <h2 className="card-title text-2xl font-bold">
-            {user.firstName} {user.lastName}
-          </h2>
-
-          {/* About */}
-          <p className="text-gray-400">{user.about}</p>
-
-          {/* Extra Info */}
-          <div className="mt-2 space-y-1 text-sm">
-            <p>
-              <span className="font-semibold">Age:</span> {user.age}
+        <div className="p-5 flex flex-col gap-3">
+          <div>
+            <h2 className="text-xl font-semibold text-[#E7E9EE]">
+              {user.firstName} {user.lastName}
+            </h2>
+            <p className="text-sm font-mono text-[#8A8FA3] mt-0.5">
+              {user.age ? `${user.age} · ` : ""}{user.gender || ""}
             </p>
-
-            <p>
-              <span className="font-semibold">Gender:</span> {user.gender}
-            </p>
-
-            <div>
-              <span className="font-semibold">Skills:</span>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {user.skills?.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="badge badge-primary badge-outline px-3 py-3"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Buttons */}
-          <div className="card-actions justify-between mt-4">
-            <button className="btn btn-error btn-outline flex-1 mr-2">
+          {user.about && (
+            <p className="text-sm text-[#8A8FA3] leading-relaxed line-clamp-4">{user.about}</p>
+          )}
+
+          {user.skills?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {user.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="text-xs font-mono px-2 py-1 rounded-md bg-[#7C6CFF]/10 text-[#A79BFF] border border-[#7C6CFF]/20"
+                >
+                  #{skill}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button
+              onClick={() => handleSendRequest("ignored", user._id)}
+              className="flex-1 py-2.5 rounded-lg border border-[#2A2E3A] text-sm font-medium text-[#8A8FA3] hover:border-[#FF5C7A]/50 hover:text-[#FF5C7A] active:scale-[0.98] transition-all"
+            >
               Ignore
             </button>
-
-            <button className="btn btn-success flex-1 ml-2">
+            <button
+              onClick={() => handleSendRequest("interested", user._id)}
+              className="flex-1 py-2.5 rounded-lg bg-[#00D6A3] text-[#06231C] text-sm font-semibold hover:bg-[#00C296] active:scale-[0.98] transition-all"
+            >
               Interested
             </button>
           </div>

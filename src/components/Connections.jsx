@@ -7,12 +7,10 @@ import { addConnections } from "../utils/connectionSlice";
 function Connections() {
   const connections = useSelector((store) => store.connections);
   const dispatch = useDispatch();
+
   const fetchConnection = async () => {
     try {
-      const res = await axios.get(BASE_URL + "/user/connections", {
-        withCredentials: true,
-      });
-      console.log(res.data.data);
+      const res = await axios.get(BASE_URL + "/user/connections", { withCredentials: true });
       dispatch(addConnections(res.data.data));
     } catch (err) {
       console.error("Error:", err.message);
@@ -23,50 +21,54 @@ function Connections() {
     fetchConnection();
   }, []);
 
-  if (!connections) return;
-  if (connections.length === 0) return <div> NO Connection Found</div>;
+  if (!connections) return null;
+
   return (
-    <div className="p-6">
-      <h1 className="text-center mb-8 text-5xl font-serif">Connections</h1>
+    <div className="min-h-[calc(100vh-64px)] bg-[#0B0D12] px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-center mb-8 sm:mb-10 text-3xl sm:text-4xl font-semibold text-[#E7E9EE]">
+          Connections
+        </h1>
 
-      <div className="flex flex-wrap justify-center gap-6">
-        {connections.map((user, index) => (
-          <div
-            key={index}
-            className="card bg-base-300 w-80 h-[400px] shadow-xl rounded-2xl overflow-hidden  overflow-hidden
-             transition-all duration-300 ease-in-out
-             hover:scale-105 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-          >
-            {/* Image */}
-            <figure className="h-64 w-full overflow-hidden">
-              <img
-                src={user.photoUrl || "https://via.placeholder.com/400x300"}
-                alt={`${user.firstName} ${user.lastName}`}
-                className="w-full h-full object-cover object-top"
-              />
-            </figure>
-
-            {/* Card Body */}
-            <div className="card-body flex flex-col justify-between">
-              <div>
-                <h2 className="card-title text-xl font-bold">
-                  {user.firstName} {user.lastName}
-                </h2>
-
-                <p className="text-sm font-mono mb-2">
-                  {user.age || "N/A"},{" "}
-                  {user.gender
-                    ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1)
-                    : "N/A"}
-                </p>
-
-                <p className="text-gray-400 text-sm overflow-hidden">
-                  {user.about || "No description available"}
-                </p>
-              </div>
-            </div>
+        {connections.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 text-center py-16">
+            <span className="font-mono text-3xl text-[#2A2E3A]">{"( )"}</span>
+            <p className="text-[#8A8FA3] text-base">No connections yet — go say hi in the feed.</p>
           </div>
-        ))}
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+            {connections.map((user, index) => (
+              <div
+                key={index}
+                className="rounded-2xl bg-[#14161D] border border-[#2A2E3A] shadow-xl shadow-black/30 overflow-hidden
+                  transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-[#7C6CFF]/40 hover:shadow-[#7C6CFF]/10 cursor-pointer"
+              >
+                <figure className="h-52 sm:h-56 w-full overflow-hidden bg-[#1C1F29]">
+                  <img
+                    src={user.photoUrl || "https://via.placeholder.com/400x300"}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </figure>
+
+                <div className="p-4 flex flex-col gap-1.5">
+                  <h2 className="text-lg font-semibold text-[#E7E9EE] truncate">
+                    {user.firstName} {user.lastName}
+                  </h2>
+
+                  <p className="text-xs font-mono text-[#8A8FA3]">
+                    {user.age || "N/A"}
+                    {user.gender ? ` · ${user.gender.charAt(0).toUpperCase()}${user.gender.slice(1)}` : ""}
+                  </p>
+
+                  <p className="text-[#8A8FA3] text-sm line-clamp-2">
+                    {user.about || "No description available"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,8 +6,7 @@ function Profile() {
   const user = useSelector((store) => store.user);
   return (
     user && (
-      <div className="h-screen">
-        
+      <div className="min-h-[calc(100vh-64px)] bg-[#0B0D12]">
         <EditProfile user={user} />
       </div>
     )
