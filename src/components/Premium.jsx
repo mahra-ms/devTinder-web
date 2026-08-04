@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../utils/constants";
 
 const plans = [
@@ -105,12 +105,40 @@ function Premium() {
   const [billing, setBilling] = useState("monthly");
   const [loadingPlan, setLoadingPlan] = useState(null);
 
+  // NEW: premium status, lifted to component top level (hooks can only be
+  // called here, never inside handlers like handlePlanClick).
+  const [isUserPremium, setIsUserPremium] = useState(false);
+  const [checkingPremium, setCheckingPremium] = useState(true);
+
+  const verifyPremiumUser = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/premium/verify`, {
+        withCredentials: true,
+      });
+
+      if (res.data?.isPremium) {
+        setIsUserPremium(true);
+      }
+    } catch (error) {
+      console.error("Failed to verify premium status:", error);
+    } finally {
+      setCheckingPremium(false);
+    }
+  };
+
+  useEffect(() => {
+    verifyPremiumUser();
+  }, []);
+
   // yearly pricing (~2 months free)
   const multiplier = billing === "yearly" ? 10 : 1;
 
   const handlePlanClick = async (plan) => {
     // Basic plan → no payment required
     if (plan.price === 0) return;
+
+    // Already premium → nothing to purchase
+    if (isUserPremium) return;
 
     try {
       setLoadingPlan(plan.name);
@@ -157,6 +185,9 @@ function Premium() {
         theme: {
           color: "#7C6CFF",
         },
+        // Re-check subscription status after a successful payment so the
+        // UI flips to "already premium" state.
+        handler: verifyPremiumUser,
         modal: {
           // Reset the loading state if the user closes the modal
           // without completing payment.
@@ -196,6 +227,23 @@ function Premium() {
             advanced community tools.
           </p>
 
+          {/* Already-premium banner */}
+          {!checkingPremium && isUserPremium && (
+            <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D6A3]/10 border border-[#00D6A3]/30 text-[#00D6A3] text-sm font-medium">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00D6A3"
+                strokeWidth="2.5"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              You're already a Premium member
+            </div>
+          )}
+
           {/* Billing Toggle */}
           <div className="inline-flex mt-6 bg-[#14161D] border border-[#2A2E3A] rounded-full p-1">
             <button
@@ -227,92 +275,107 @@ function Premium() {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative rounded-2xl border overflow-hidden flex flex-col transition-all duration-300 ${
-                plan.highlight
-                  ? "border-[#7C6CFF] bg-[#14161D] shadow-2xl shadow-[#7C6CFF]/20 md:-translate-y-2"
-                  : "border-[#2A2E3A] bg-[#14161D] shadow-xl shadow-black/30"
-              }`}
-            >
-              {plan.highlight && (
-                <div className="absolute top-0 right-0 bg-[#7C6CFF] text-white text-[10px] font-mono px-3 py-1 rounded-bl-lg">
-                  MOST POPULAR
-                </div>
-              )}
+          {plans.map((plan) => {
+            const isPaidPlan = plan.price > 0;
+            const disableCta =
+              plan.price === 0 ||
+              loadingPlan === plan.name ||
+              (isPaidPlan && isUserPremium);
 
-              {/* Fake terminal header */}
-              <div className="px-4 py-2.5 border-b border-[#2A2E3A] flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5C7A]/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#F5C242]/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#00D6A3]/70" />
-                <span className="text-xs font-mono text-[#565B6B] ml-2">
-                  {plan.name.toLowerCase()}.plan
-                </span>
-              </div>
+            let ctaLabel = plan.cta;
+            if (loadingPlan === plan.name) {
+              ctaLabel = "Processing...";
+            } else if (isPaidPlan && isUserPremium) {
+              ctaLabel = "Already Premium";
+            }
 
-              <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-xl font-semibold text-[#E7E9EE]">
-                  {plan.name}
-                </h3>
+            return (
+              <div
+                key={plan.name}
+                className={`relative rounded-2xl border overflow-hidden flex flex-col transition-all duration-300 ${
+                  plan.highlight
+                    ? "border-[#7C6CFF] bg-[#14161D] shadow-2xl shadow-[#7C6CFF]/20 md:-translate-y-2"
+                    : "border-[#2A2E3A] bg-[#14161D] shadow-xl shadow-black/30"
+                }`}
+              >
+                {plan.highlight && (
+                  <div className="absolute top-0 right-0 bg-[#7C6CFF] text-white text-[10px] font-mono px-3 py-1 rounded-bl-lg">
+                    MOST POPULAR
+                  </div>
+                )}
 
-                <p className="text-sm text-[#8A8FA3] mt-2">{plan.tagline}</p>
-
-                {/* Price */}
-                <div className="flex items-end gap-1 mt-6">
-                  <span className="text-4xl font-semibold text-[#E7E9EE]">
-                    ₹{plan.price === 0 ? 0 : plan.price * multiplier}
-                  </span>
-
-                  <span className="text-sm text-[#8A8FA3] mb-1.5">
-                    {plan.price === 0
-                      ? "/ forever"
-                      : billing === "yearly"
-                      ? "/ year"
-                      : "/ month"}
+                {/* Fake terminal header */}
+                <div className="px-4 py-2.5 border-b border-[#2A2E3A] flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5C7A]/70" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#F5C242]/70" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#00D6A3]/70" />
+                  <span className="text-xs font-mono text-[#565B6B] ml-2">
+                    {plan.name.toLowerCase()}.plan
                   </span>
                 </div>
 
-                {/* Features */}
-                <ul className="mt-6 space-y-3 flex-1">
-                  {plan.features.map((feature) => (
-                    <li
-                      key={feature.label}
-                      className="flex items-center gap-3 text-sm"
-                    >
-                      <CheckIcon included={feature.included} />
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-semibold text-[#E7E9EE]">
+                    {plan.name}
+                  </h3>
 
-                      <span
-                        className={
-                          feature.included
-                            ? "text-[#E7E9EE]"
-                            : "text-[#565B6B]"
-                        }
+                  <p className="text-sm text-[#8A8FA3] mt-2">{plan.tagline}</p>
+
+                  {/* Price */}
+                  <div className="flex items-end gap-1 mt-6">
+                    <span className="text-4xl font-semibold text-[#E7E9EE]">
+                      ₹{plan.price === 0 ? 0 : plan.price * multiplier}
+                    </span>
+
+                    <span className="text-sm text-[#8A8FA3] mb-1.5">
+                      {plan.price === 0
+                        ? "/ forever"
+                        : billing === "yearly"
+                        ? "/ year"
+                        : "/ month"}
+                    </span>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="mt-6 space-y-3 flex-1">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature.label}
+                        className="flex items-center gap-3 text-sm"
                       >
-                        {feature.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                        <CheckIcon included={feature.included} />
 
-                {/* CTA */}
-                <button
-                  disabled={plan.price === 0 || loadingPlan === plan.name}
-                  onClick={() => handlePlanClick(plan)}
-                  className={`w-full mt-6 py-3 rounded-lg text-sm font-semibold transition-all active:scale-[0.98] ${
-                    plan.price === 0
-                      ? "bg-[#3E455A] text-[#D7DCEE] cursor-not-allowed opacity-70"
-                      : plan.highlight
-                      ? "bg-[#7C6CFF] text-white hover:bg-[#6D5CF0] shadow-lg shadow-[#7C6CFF]/20"
-                      : "bg-[#00D6A3] text-[#06231C] hover:bg-[#00C296]"
-                  }`}
-                >
-                  {loadingPlan === plan.name ? "Processing..." : plan.cta}
-                </button>
+                        <span
+                          className={
+                            feature.included
+                              ? "text-[#E7E9EE]"
+                              : "text-[#565B6B]"
+                          }
+                        >
+                          {feature.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <button
+                    disabled={disableCta}
+                    onClick={() => handlePlanClick(plan)}
+                    className={`w-full mt-6 py-3 rounded-lg text-sm font-semibold transition-all active:scale-[0.98] ${
+                      disableCta
+                        ? "bg-[#3E455A] text-[#D7DCEE] cursor-not-allowed opacity-70"
+                        : plan.highlight
+                        ? "bg-[#7C6CFF] text-white hover:bg-[#6D5CF0] shadow-lg shadow-[#7C6CFF]/20"
+                        : "bg-[#00D6A3] text-[#06231C] hover:bg-[#00C296]"
+                    }`}
+                  >
+                    {ctaLabel}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Footer */}
@@ -324,4 +387,4 @@ function Premium() {
   );
 }
 
-export default Premium;
+export default Premium;   
