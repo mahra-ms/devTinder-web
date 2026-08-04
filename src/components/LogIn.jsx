@@ -20,7 +20,8 @@ function Login() {
     const data = err?.response?.data;
     if (!data) return "Something went wrong. Please try again.";
     if (typeof data === "string") return data;
-    if (typeof data === "object") return data.message || data.error || JSON.stringify(data);
+    if (typeof data === "object")
+      return data.message || data.error || JSON.stringify(data);
     return "Something went wrong. Please try again.";
   };
 
@@ -29,7 +30,7 @@ function Login() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${BASE_URL}/login`,
+        `${BASE_URL}/logIn`,
         { emailId: email, password },
         { withCredentials: true },
       );
@@ -53,7 +54,7 @@ function Login() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${BASE_URL}/signup`,
+        `${BASE_URL}/signUp`,
         { firstName, lastName, emailId: email, password },
         { withCredentials: true },
       );
@@ -100,14 +101,17 @@ function Login() {
         <div className="bg-[#14161D] border border-[#2A2E3A] rounded-b-2xl p-6 sm:p-8 shadow-2xl shadow-black/40">
           <div className="flex justify-center mb-6">
             <span className="font-mono text-xl font-medium text-[#E7E9EE]">
-              <span className="text-[#7C6CFF]">{"<"}</span>byte.Social<span className="text-[#7C6CFF]">{"/>"}</span>
+              <span className="text-[#7C6CFF]">{"<"}</span>byte.Social
+              <span className="text-[#7C6CFF]">{"/>"}</span>
             </span>
           </div>
 
           <div className="flex mb-6 bg-[#1C1F29] rounded-full p-1">
             <button
               className={`flex-1 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                isLoginForm ? "bg-[#7C6CFF] text-white shadow" : "text-[#8A8FA3] hover:text-[#E7E9EE]"
+                isLoginForm
+                  ? "bg-[#7C6CFF] text-white shadow"
+                  : "text-[#8A8FA3] hover:text-[#E7E9EE]"
               }`}
               onClick={switchToLogin}
             >
@@ -115,7 +119,9 @@ function Login() {
             </button>
             <button
               className={`flex-1 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                !isLoginForm ? "bg-[#7C6CFF] text-white shadow" : "text-[#8A8FA3] hover:text-[#E7E9EE]"
+                !isLoginForm
+                  ? "bg-[#7C6CFF] text-white shadow"
+                  : "text-[#8A8FA3] hover:text-[#E7E9EE]"
               }`}
               onClick={switchToSignUp}
             >
@@ -127,14 +133,18 @@ function Login() {
             {isLoginForm ? "Welcome back" : "Create your account"}
           </h2>
           <p className="text-center text-sm text-[#8A8FA3] mb-6">
-            {isLoginForm ? "Log in to keep matching" : "Find your next merge conflict \u2014 or your match"}
+            {isLoginForm
+              ? "Log in to keep matching"
+              : "Find your next merge conflict \u2014 or your match"}
           </p>
 
           <div className="flex flex-col gap-4">
             {!isLoginForm && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <label className="flex-1">
-                  <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">First name</span>
+                  <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">
+                    First name
+                  </span>
                   <input
                     type="text"
                     value={firstName}
@@ -144,7 +154,9 @@ function Login() {
                   />
                 </label>
                 <label className="flex-1">
-                  <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">Last name</span>
+                  <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">
+                    Last name
+                  </span>
                   <input
                     type="text"
                     value={lastName}
@@ -157,7 +169,9 @@ function Login() {
             )}
 
             <label>
-              <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">Email</span>
+              <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">
+                Email
+              </span>
               <input
                 type="email"
                 value={email}
@@ -168,7 +182,9 @@ function Login() {
             </label>
 
             <label>
-              <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">Password</span>
+              <span className="block text-xs font-medium text-[#8A8FA3] mb-1.5">
+                Password
+              </span>
               <input
                 type="password"
                 value={password}
@@ -196,7 +212,9 @@ function Login() {
               className="text-center text-sm cursor-pointer mt-1 text-[#8A8FA3] hover:text-[#7C6CFF] transition-colors"
               onClick={() => setIsLoginForm((prev) => !prev)}
             >
-              {isLoginForm ? "New here? Sign up now" : "Already have an account? Login"}
+              {isLoginForm
+                ? "New here? Sign up now"
+                : "Already have an account? Login"}
             </p>
           </div>
         </div>
