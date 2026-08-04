@@ -32,7 +32,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8">
         <div className="col-span-2 sm:col-span-2">
           <div className="font-mono text-lg font-medium text-[#E7E9EE]">
-            <span className="text-[#7C6CFF]">{"<"}</span>devTinder<span className="text-[#7C6CFF]">{"/>"}</span>
+            <span className="text-[#7C6CFF]">{"<"}</span>byte.Social<span className="text-[#7C6CFF]">{"/>"}</span>
           </div>
           <p className="text-sm text-[#8A8FA3] mt-3 max-w-xs">
             Where developers match on stack, not just swipes.
@@ -58,7 +58,7 @@ function Footer() {
       </div>
 
       <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-[#2A2E3A] flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-xs text-[#565B6B]">© {new Date().getFullYear()} devTinder. All rights reserved.</p>
+        <p className="text-xs text-[#565B6B]">© {new Date().getFullYear()} byte.Social . All rights reserved.</p>
         <div className="flex gap-4">
           {socials.map((s) => (
             <a key={s.label} href="#" aria-label={s.label} className="text-[#565B6B] hover:text-[#7C6CFF] transition-colors">

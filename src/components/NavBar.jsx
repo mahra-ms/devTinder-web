@@ -9,6 +9,7 @@ const links = [
   { to: "/profile", label: "Profile" },
   { to: "/connections", label: "Connections" },
   { to: "/requests", label: "Requests" },
+  { to: "/premium", label: "Premium" },
 ];
 
 function NavBar() {
@@ -38,7 +39,7 @@ function NavBar() {
           className="font-[var(--font-mono,'JetBrains_Mono',monospace)] text-lg sm:text-xl font-medium text-[#E7E9EE] flex items-center gap-0.5"
         >
           <span className="text-[#7C6CFF]">{"<"}</span>
-          devTinder
+          byte.Social
           <span className="text-[#7C6CFF]">{"/>"}</span>
         </Link>
 

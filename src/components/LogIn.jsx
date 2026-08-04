@@ -100,7 +100,7 @@ function Login() {
         <div className="bg-[#14161D] border border-[#2A2E3A] rounded-b-2xl p-6 sm:p-8 shadow-2xl shadow-black/40">
           <div className="flex justify-center mb-6">
             <span className="font-mono text-xl font-medium text-[#E7E9EE]">
-              <span className="text-[#7C6CFF]">{"<"}</span>devTinder<span className="text-[#7C6CFF]">{"/>"}</span>
+              <span className="text-[#7C6CFF]">{"<"}</span>byte.Social<span className="text-[#7C6CFF]">{"/>"}</span>
             </span>
           </div>
 
