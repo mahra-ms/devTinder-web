@@ -11,12 +11,14 @@ import "react-toastify/dist/ReactToastify.css";
 import Connections from "./components/Connections";
 import Requests from "./components/Requests";
 import Premium from "./components/Premium";
+import Chat from "./components/Chat";
 
 function App() {
   return (
     <Provider store={appStore}>
       <BrowserRouter basename="/">
         <Routes>
+          
           <Route path="/" element={<Body />}>
           <Route path="/feed" element={<Feed />} />
             <Route path="login" element={<LogIn />} />
@@ -24,8 +26,8 @@ function App() {
             <Route path="connections" element={<Connections />} />
             <Route path="requests" element={<Requests />} />
             <Route path="premium" element={<Premium />} />
-            
-            
+            <Route path="chat/:targetUserId" element={<Chat />} />
+
           </Route>
         </Routes>
         <ToastContainer />
